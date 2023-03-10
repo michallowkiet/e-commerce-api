@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
-import ICustomError from '../utils/types/ICustomError.js';
+import ICustomError from '../types/ICustomError.js';
 import { Error } from 'mongoose';
 import { MongoServerError } from 'mongodb';
 

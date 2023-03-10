@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
-import IUser, { UserRole } from '../utils/types/IUser.js';
+import IUser, { UserRole } from '../types/IUser.js';
 import bcrypt from 'bcrypt';
 
 const UserSchema = new mongoose.Schema<IUser>({

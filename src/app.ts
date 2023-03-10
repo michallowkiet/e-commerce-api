@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import ErrorHandler from './middleware/ErrorHandler.js';
 import NotFoundHandler from './middleware/NotFoundHandler.js';
-import connectDB from './utils/db/Connect.js';
+import { connectDB } from './utils/index.js';
 import morgan from 'morgan';
 import AuthRouter from './routes/AuthRouter.js';
 
