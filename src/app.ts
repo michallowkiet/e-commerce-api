@@ -4,6 +4,7 @@ import ErrorHandler from './middleware/ErrorHandler.js';
 import NotFoundHandler from './middleware/NotFoundHandler.js';
 import { connectDB } from './utils/index.js';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import AuthRouter from './routes/AuthRouter.js';
 
 dotenv.config();
@@ -13,6 +14,7 @@ const MONGO_URL = process.env.MONGO_URL;
 
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(cookieParser());
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).send('Witaj');
