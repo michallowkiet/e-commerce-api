@@ -1,12 +1,27 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { NotFoundError } from '../errors/index.js';
+import User from '../models/User.js';
+import { UserRole } from '../types/IUser.js';
 
 const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
-  res.status(StatusCodes.OK).json({ msg: 'getAllUsers' });
+  const users = await User.find({ role: UserRole.USER }).select('-password -__v');
+
+  const numberOfUsers = await User.countDocuments({ role: UserRole.USER });
+
+  res.status(StatusCodes.OK).json({ users: users, numberOfUsers });
 };
 
 const getSingleUser = async (req: Request, res: Response, next: NextFunction) => {
-  res.status(StatusCodes.OK).json({ msg: 'getSingleUser' });
+  const { id: userID } = req.params;
+
+  const user = await User.findById(userID).select('-password -__v');
+
+  if (!user) {
+    throw new NotFoundError('User does not exist');
+  }
+
+  res.status(StatusCodes.OK).json({ user });
 };
 
 const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
