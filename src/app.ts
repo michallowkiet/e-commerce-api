@@ -14,7 +14,7 @@ const MONGO_URL = process.env.MONGO_URL;
 
 app.use(express.json());
 app.use(morgan('tiny'));
-app.use(cookieParser());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).send('Witaj');

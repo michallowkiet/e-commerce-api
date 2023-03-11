@@ -1,9 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import validator from 'validator';
-import IUser, { UserRole } from '../types/IUser.js';
+import IUser, { IUserMethods, UserRole } from '../types/IUser.js';
 import bcrypt from 'bcrypt';
 
-const UserSchema = new mongoose.Schema<IUser>({
+type UserModel = Model<IUser, object, IUserMethods>;
+
+const UserSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
   name: {
     type: String,
     required: [true, 'Please provide name.'],
@@ -35,7 +37,9 @@ UserSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-UserSchema.methods.comperePassword = async function (candidatePassword: string) {
+UserSchema.methods.comperePassword = async function (
+  candidatePassword: string,
+) {
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
   return isMatch;
 };

@@ -3,6 +3,15 @@ export enum UserRole {
   USER = 'user',
 }
 
+export interface ISignIn {
+  email: string;
+  password: string;
+}
+
+export interface IUserMethods {
+  comperePassword(val: string): Promise<boolean>;
+}
+
 interface IUser {
   name: string;
   email: string;

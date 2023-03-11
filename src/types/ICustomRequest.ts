@@ -1,6 +1,10 @@
 import { Request } from 'express';
-import IUser from './IUser.js';
+import IUser, { ISignIn } from './IUser.js';
 
-export interface ICustomUserRequest extends Request {
+export interface ICreateUserRequest extends Request {
   body: IUser;
+}
+
+export interface ISignInUserRequest extends Request {
+  body: ISignIn;
 }
