@@ -8,8 +8,13 @@ export interface ISignIn {
   password: string;
 }
 
+export interface IChangePassword {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface IUserMethods {
-  comperePassword(val: string): Promise<boolean>;
+  comperePassword(candidatePassword: string): Promise<boolean>;
 }
 
 export interface IUserResponse {

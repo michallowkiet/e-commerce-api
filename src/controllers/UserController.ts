@@ -1,29 +1,19 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { NotFoundError } from '../errors/index.js';
+import { BadRequestError, NotFoundError, UnauthenticatedError } from '../errors/index.js';
 import User from '../models/User.js';
-import { IAuthenticatedUserRequest } from '../types/ICustomRequest.js';
+import { IAuthenticatedUserRequest, IChangePasswordRequest } from '../types/ICustomRequest.js';
 import { UserRole } from '../types/IUser.js';
 
-const getAllUsers = async (
-  req: IAuthenticatedUserRequest,
-  res: Response,
-  next: NextFunction,
-) => {
-  const users = await User.find({ role: UserRole.USER }).select(
-    '-password -__v',
-  );
+const getAllUsers = async (req: IAuthenticatedUserRequest, res: Response, next: NextFunction) => {
+  const users = await User.find({ role: UserRole.USER }).select('-password -__v');
 
   const numberOfUsers = await User.countDocuments({ role: UserRole.USER });
 
   res.status(StatusCodes.OK).json({ users: users, numberOfUsers });
 };
 
-const getSingleUser = async (
-  req: IAuthenticatedUserRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+const getSingleUser = async (req: IAuthenticatedUserRequest, res: Response, next: NextFunction) => {
   const { id: userID } = req.params;
 
   const user = await User.findById(userID).select('-password -__v');
@@ -40,29 +30,35 @@ const getCurrentUser = async (
   res: Response,
   next: NextFunction,
 ) => {
-  res.status(StatusCodes.OK).json({ msg: 'getCurrentUser' });
+  res.status(StatusCodes.OK).json({ user: req.user });
 };
 
-const updateUser = async (
-  req: IAuthenticatedUserRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+const updateUser = async (req: IAuthenticatedUserRequest, res: Response, next: NextFunction) => {
   res.status(StatusCodes.OK).json({ msg: 'getUpdateUser' });
 };
 
 const updateUserPassword = async (
-  req: IAuthenticatedUserRequest,
+  req: IChangePasswordRequest,
   res: Response,
   next: NextFunction,
 ) => {
-  res.status(StatusCodes.OK).json({ msg: 'updateUserPassword' });
+  const { oldPassword, newPassword } = req.body;
+  const { userId } = req.user;
+
+  if (!oldPassword || !newPassword) {
+    throw new BadRequestError('Provide old and new password.');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!(await user.comperePassword(oldPassword))) {
+    throw new UnauthenticatedError('Password does not match');
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(StatusCodes.OK).json({ msg: 'Password changed successfully.' });
 };
 
-export {
-  getAllUsers,
-  getCurrentUser,
-  getSingleUser,
-  updateUser,
-  updateUserPassword,
-};
+export { getAllUsers, getCurrentUser, getSingleUser, updateUser, updateUserPassword };

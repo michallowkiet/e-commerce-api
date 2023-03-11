@@ -7,8 +7,10 @@ const createToken = (payload: IJWTPayload) =>
     expiresIn: process.env.JWT_LIFETIME,
   });
 
-const verifyToken = (token: string): IJWTPayload =>
-  jwt.verify(token, process.env.JWT_SECRET) as IJWTPayload;
+const verifyToken = (token: string): IJWTPayload => {
+  const { userId, name, role } = jwt.verify(token, process.env.JWT_SECRET) as IJWTPayload;
+  return { userId, name, role };
+};
 
 const addCookiesToResponse = (res: Response, userPayload: IJWTPayload) => {
   const token = createToken(userPayload);
