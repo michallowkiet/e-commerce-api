@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import cors from 'cors';
 import express, { Request, Response } from 'express';
 import ErrorHandler from './middleware/ErrorHandler.js';
 import NotFoundHandler from './middleware/NotFoundHandler.js';
@@ -15,6 +16,7 @@ const MONGO_URL = process.env.MONGO_URL;
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(cors());
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).send('Witaj');
