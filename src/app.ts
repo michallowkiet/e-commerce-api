@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import AuthRouter from './routes/AuthRouter.js';
 import UserRouter from './routes/UserRouter.js';
+import { authenticateUserHandler } from './middleware/AuthenticationHandler.js';
 
 dotenv.config();
 const app = express();
@@ -24,7 +25,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/auth', AuthRouter);
-app.use('/api/v1/users', UserRouter);
+app.use('/api/v1/users', authenticateUserHandler, UserRouter);
 
 app.use(NotFoundHandler);
 app.use(ErrorHandler);
