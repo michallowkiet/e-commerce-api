@@ -3,5 +3,8 @@ Simple API for e-commerce project
 
 stack: Express + TypeScript + MongoDB
 
-- [ ] - finish backend
+### TODO
+
+- [ ] - add email sending feature
+- [ ] - add auth workflow (password reset, token refresh)
 - [ ] - Front End app
