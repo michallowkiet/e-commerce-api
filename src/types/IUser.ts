@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
@@ -13,24 +15,17 @@ export interface IChangePassword {
   newPassword: string;
 }
 
-export interface IUserMethods {
-  comperePassword(candidatePassword: string): Promise<boolean>;
-}
-
-export interface IUserResponse {
+export interface IUserModel {
+  _id: mongoose.Types.ObjectId;
   name: string;
-  email: string;
   role: UserRole;
 }
+
 interface IUser {
   name: string;
   email: string;
   password: string;
   role?: UserRole;
-}
-
-export interface IUserModel extends IUser {
-  _id: string;
 }
 
 export default IUser;
