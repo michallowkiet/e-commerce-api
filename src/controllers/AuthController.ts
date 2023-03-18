@@ -6,8 +6,8 @@ import {
   ICreateUserRequest,
   ISignInUserRequest,
 } from '../types/ICustomRequest.js';
-import { IJWTPayload } from '../types/IJWTPayload.js';
-import { addCookiesToResponse } from '../utils/index.js';
+import { IUserModel } from '../types/IUser.js';
+import { addCookiesToResponse, createTokenUser } from '../utils/index.js';
 
 const signUp = async (
   req: ICreateUserRequest,
@@ -18,11 +18,7 @@ const signUp = async (
 
   const user = await User.create({ name, email, password });
 
-  const userPayload: IJWTPayload = {
-    userId: user._id,
-    name: user.name,
-    role: user.role,
-  };
+  const userPayload = createTokenUser(user as IUserModel);
 
   addCookiesToResponse(res, userPayload);
 
@@ -48,11 +44,7 @@ const signIn = async (req: ISignInUserRequest, res: Response) => {
     throw new UnauthenticatedError('Invalid credentials.');
   }
 
-  const userPayload: IJWTPayload = {
-    userId: user._id,
-    name: user.name,
-    role: user.role,
-  };
+  const userPayload = createTokenUser(user as IUserModel);
 
   addCookiesToResponse(res, userPayload);
 
