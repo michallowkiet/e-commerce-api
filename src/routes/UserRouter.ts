@@ -16,9 +16,10 @@ UserRouter.route('/').get(AsyncErrorWrapper(getAllUsers));
 UserRouter.route('/showMe').get(AsyncErrorWrapper(getCurrentUser));
 UserRouter.route('/updateUser').patch(AsyncErrorWrapper(updateUser));
 UserRouter.route('/updateUserPassword').patch(AsyncErrorWrapper(updateUserPassword));
-UserRouter.route('/:id').get(
-  authorizePermissions(UserRole.ADMIN),
-  AsyncErrorWrapper(getSingleUser),
-);
+// UserRouter.route('/:id').get(
+//   authorizePermissions(UserRole.ADMIN),
+//   AsyncErrorWrapper(getSingleUser),
+// );
+UserRouter.route('/:id').get(AsyncErrorWrapper(getSingleUser));
 
 export default UserRouter;

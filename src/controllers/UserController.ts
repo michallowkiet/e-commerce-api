@@ -2,8 +2,14 @@ import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, NotFoundError, UnauthenticatedError } from '../errors/index.js';
 import User from '../models/User.js';
-import { IAuthenticatedUserRequest, IChangePasswordRequest } from '../types/ICustomRequest.js';
-import { UserRole } from '../types/IUser.js';
+import {
+  IAuthenticatedUserRequest,
+  IChangePasswordRequest,
+  IUpdateUserRequest,
+} from '../types/ICustomRequest.js';
+import { IUserModel, UserRole } from '../types/IUser.js';
+import createTokenUser from '../utils/createTokenUser.js';
+import { addCookiesToResponse, checkPermissions } from '../utils/index.js';
 
 const getAllUsers = async (req: IAuthenticatedUserRequest, res: Response, next: NextFunction) => {
   const users = await User.find({ role: UserRole.USER }).select('-password -__v');
@@ -22,6 +28,7 @@ const getSingleUser = async (req: IAuthenticatedUserRequest, res: Response, next
     throw new NotFoundError('User does not exist');
   }
 
+  checkPermissions(req.user, user._id);
   res.status(StatusCodes.OK).json({ user });
 };
 
@@ -33,9 +40,52 @@ const getCurrentUser = async (
   res.status(StatusCodes.OK).json({ user: req.user });
 };
 
-const updateUser = async (req: IAuthenticatedUserRequest, res: Response, next: NextFunction) => {
-  res.status(StatusCodes.OK).json({ msg: 'getUpdateUser' });
+const updateUser = async (req: IUpdateUserRequest, res: Response, next: NextFunction) => {
+  const { name, email } = req.body;
+
+  if (!name || !email) {
+    throw new BadRequestError('Provide name and email.');
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user.userId },
+    { name, email },
+    { new: true, runValidators: true },
+  );
+
+  if (!user) {
+    throw new NotFoundError('User does not exist');
+  }
+
+  const userPayload = createTokenUser(user as IUserModel);
+  addCookiesToResponse(res, userPayload);
+
+  res.status(StatusCodes.OK).json({ user: userPayload });
 };
+
+// const updateUser = async (req: IUpdateUserRequest, res: Response, next: NextFunction) => {
+//   const { name, email } = req.body;
+
+//   if (!name || !email) {
+//     throw new BadRequestError('Provide name and email.');
+//   }
+
+//   const user = await User.findById({ _id: req.user.userId });
+
+//   if (!user) {
+//     throw new NotFoundError('User does not exist');
+//   }
+
+//   user.email = email;
+//   user.name = name;
+
+//   await user.save();
+
+//   const tokenUser = createTokenUser(user as IUserModel);
+//   addCookiesToResponse(res, tokenUser);
+
+//   res.status(StatusCodes.OK).json({ user: tokenUser });
+// };
 
 const updateUserPassword = async (
   req: IChangePasswordRequest,

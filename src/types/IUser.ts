@@ -5,9 +5,18 @@ export enum UserRole {
   USER = 'user',
 }
 
+export interface IUserMethods {
+  comperePassword: (val: string) => Promise<boolean>;
+}
+
 export interface ISignIn {
   email: string;
   password: string;
+}
+
+export interface IUpdateUser {
+  name: string;
+  email: string;
 }
 
 export interface IChangePassword {
